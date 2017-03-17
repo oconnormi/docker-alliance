@@ -1,4 +1,7 @@
 # Docker Alliance
+
+[![Stories in Ready](https://badge.waffle.io/oconnormi/docker-alliance.svg?label=ready&title=Ready)](http://waffle.io/oconnormi/docker-alliance)
+
 Alliance in a container
 
 [![license](https://img.shields.io/github/license/oconnormi/docker-alliance.svg?maxAge=2592000?style=flat-square)](https://github.com/oconnormi/docker-alliance/blob/master/LICENSE)
