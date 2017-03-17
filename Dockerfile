@@ -1,12 +1,12 @@
 FROM oconnormi/ddf-base
 MAINTAINER oconnormi
 
-ENV APP_VERSION=0.2
+ENV APP_VERSION=0.3.0-SNAPSHOT
 ENV APP_BASE=/opt
 ENV APP_HOME=$APP_BASE/alliance
 ENV APP_LOG=$APP_HOME/data/log/ddf.log
 #releases, snapshots
-ENV APP_REPO=releases
+ENV APP_REPO=snapshots
 ENV STARTUP_APPS=admin-app;platform-app;catalog-app;spatial-app;security-services-app;security-app
 ENV UNINSTALL_FEATURES=admin-modules-installer
 
