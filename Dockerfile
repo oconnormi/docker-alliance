@@ -1,7 +1,7 @@
 FROM oconnormi/ddf-base
 MAINTAINER oconnormi
 
-ENV APP_VERSION=0.2
+ENV APP_VERSION=0.2.2
 ENV APP_BASE=/opt
 ENV APP_HOME=$APP_BASE/alliance
 ENV APP_LOG=$APP_HOME/data/log/ddf.log
@@ -18,7 +18,7 @@ RUN mkdir -p $APP_BASE/tmp \
     && curl -o alliance.sha1 "http://artifacts.codice.org/service/local/artifact/maven/content?g=org.codice.alliance.distribution&a=alliance&v=$APP_VERSION&r=$APP_REPO&e=zip.sha1" \
     && sed -i'' -e '/^/ s/$/  alliance.zip/' alliance.sha1 \
     && curl -o alliance.zip "http://artifacts.codice.org/service/local/artifact/maven/content?g=org.codice.alliance.distribution&a=alliance&v=$APP_VERSION&r=$APP_REPO&e=zip" \
-    && sha1sum  -c alliance.sha1 2>&1 > /dev/null \
+    && sha1sum -c alliance.sha1 2>&1 > /dev/null \
     && rm alliance.sha1 \
     && unzip alliance.zip \
     && mv alliance-${APP_VERSION}/* $APP_HOME \
