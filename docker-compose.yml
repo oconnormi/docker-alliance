@@ -1,0 +1,7 @@
+version: '3'
+services:
+  alliance:
+    image: codice/alliance
+    ports:
+      - 8993:8993
+      - 8181:8181

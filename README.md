@@ -14,26 +14,26 @@ See the [alliance homepage](https://github.com/codice/alliance)
 To start a basic default Alliance instance
 
 ```
-docker run -name some-alliance -d oconnormi/alliance
+docker run -name some-alliance -d codice/alliance
 ```
 
 To expose the alliance ui:
 
 ```
-docker run -name some-alliance -d -p 8993:8993 oconnormi/alliance
+docker run -name some-alliance -d -p 8993:8993 codice/alliance
 ```
 
 ## Persistence
 
-To persist data/configurations mount either a volume container or a local folder to `/opt/alliance/data`
+To persist data/configurations mount either a volume container or a local folder to `/app/data`
 
 ## Configuration
 
-To configure the system mount a volume container or local folder to `/opt/alliance/etc`
+To configure the system mount a volume container or local folder to `/app/etc`
 
 ## Deploying bundles
 
-To deploy bundles that are not packaged with the Alliance distribution mount a volume container or local folder to `/opt/alliance/deploy`
+To deploy bundles that are not packaged with the Alliance distribution mount a volume container or local folder to `/app/deploy`
 
 ## Customizing Setup
 
