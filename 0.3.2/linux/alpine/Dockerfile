@@ -15,7 +15,7 @@ LABEL maintainer=oconnormi
 ENV APP_NAME=alliance
 ENV APP_HOME=/app
 ENV APP_LOG=$APP_HOME/data/log/$APP_NAME.log
-ENV INSTALL_PROFILE=Alliance
+ENV INSTALL_PROFILE=alliance
 
 COPY --from=0 /alliance $APP_HOME
 
