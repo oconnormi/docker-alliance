@@ -1,5 +1,5 @@
 pipeline {
-  agent { label 'linux-docker-small' }
+  agent { label 'dind' }
   options {
     buildDiscarder(logRotator(numToKeepStr:'25'))
     disableConcurrentBuilds()
