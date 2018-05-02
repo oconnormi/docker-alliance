@@ -9,6 +9,10 @@ MANIFEST_TOOL_VERSION:=0.7.0
 MANIFEST_TOOL_NAME=manifest-tool-$(MANIFEST_TOOL_OS)-$(MANIFEST_TOOL_ARCH)
 MANIFEST_TOOL_URL=https://github.com/estesp/manifest-tool/releases/download/v$(MANIFEST_TOOL_VERSION)/$(MANIFEST_TOOL_NAME)
 
+# Find all symlinks in the current directory, these will be used as floating tag names (i.e. latest, edge)
+FLOATING_TAGS:=$(sort $(shell find . -type l -maxdepth 1 -exec find -L {} -name Dockerfile \; | grep -v "windows" | sed 's:linux/::' | sed 's:/Dockerfile::' | sed 's:\./::'))
+PUSH_FLOATING_TAGS:=$(shell echo "$(FLOATING_TAGS)" | sed 's/[^ ].* */push_&/g')
+MANIFEST_FLOATING_TAGS:=$(shell echo "$(FLOATING_TAGS)" | sed 's/[^ ]* */manifest_&/g')
 # Find all Dockerfiles, excluding windows. then strip linux and Dockerfile from resulting path
 # this will help to make friendly build targets like $image_version/$image_os
 IMAGES:=$(sort $(shell find -L . -type f -name Dockerfile | grep -v "windows" | sed 's:linux/::' | sed 's:/Dockerfile::' | sed 's:\./::' | sed '/2.10.*/d'))
@@ -37,7 +41,7 @@ help: ## Display help.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 .PHONY: images
-images: $(IMAGES) latest ## Build all docker containers
+images: $(FLOATING_TAGS) latest edge ## Build all docker containers
 
 .PHONY: $(IMAGES)
 $(IMAGES): ## Build specific image
@@ -45,12 +49,17 @@ $(IMAGES): ## Build specific image
 	@docker build --pull -t $(BUILD_TAG) -f $(DOCKERFILE_PATH) $(DOCKER_BUILD_CONTEXT)
 
 .PHONY: latest
-latest:
+latest: ## Build latest version
 	@echo "Building $@"
 	@docker build -t $(IMAGE_NAME):latest-$(IMAGE_ARCH) -f latest/linux/alpine/Dockerfile latest/linux
 
+.PHONY: edge
+edge: ## Build Edge Version
+	@echo "\n Building $@...\n"
+	@docker build -t $(IMAGE_NAME):edge-$(IMAGE_ARCH) -f edge/linux/alpine/Dockerfile edge/linux
+
 .PHONY: push
-push: images $(PUSH_TARGETS) push_latest ## Push all images
+push: images $(PUSH_FLOATING_TAGS) push_latest push_edge ## Push all images
 
 .PHONY: $(PUSH_TARGETS)
 $(PUSH_TARGETS): ## Push specific image
@@ -62,8 +71,13 @@ push_latest:
 	@echo "Pushing latest"
 	@docker push $(IMAGE_NAME):latest-$(IMAGE_ARCH)
 
+.PHONY: push_edge
+push_edge:
+	@echo "Pushing edge"
+	@docker push $(IMAGE_NAME):edge-$(IMAGE_ARCH)
+
 .PHONY: manifests
-manifests: $(MANIFEST_TARGETS) manifest_latest ## Create all manifests
+manifests: $(MANIFEST_FLOATING_TAGS) manifest_latest manifest_edge ## Create all manifests
 
 .PHONY: $(MANIFEST_TARGETS)
 $(MANIFEST_TARGETS): .tools/manifest-tool ## Push manifest objects
@@ -80,6 +94,14 @@ manifest_latest:
 		--platforms $(MANIFEST_PLATFORMS) \
 		--template $(IMAGE_NAME):latest-ARCH \
 		--target $(IMAGE_NAME):latest
+
+.PHONY: manifest_edge
+manifest_edge:
+	@echo "Creating/Pushing manifest object for edge"
+	@.tools/manifest-tool push from-args \
+		--platforms $(MANIFEST_PLATFORMS) \
+		--template $(IMAGE_NAME):edge-ARCH \
+		--target $(IMAGE_NAME):edge
 
 .tools/manifest-tool: ## Install manifest-tool
 	@echo "Downloading manifest-tool $(MANIFEST_TOOL_NAME)"
